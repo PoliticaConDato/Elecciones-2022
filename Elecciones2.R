@@ -18,10 +18,10 @@ blanco.3 <- 0.017 # Historical average
 # Regression model based on the 2018 senate and presidential elections
 
 # Read the data into a data frame.
-senado.df <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/Sen2018.csv")
-presi.df <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/Pre2018.csv")
+senado.df <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/Sen2018.csv")
+presi.df <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/Pre2018.csv")
 
-senado.22 <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/senado2022.csv")
+senado.22 <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/senado2022.csv")
 
 # Initial data cleanup
 senado.df <- senado.df[-c(1123,1124),]
@@ -29,7 +29,7 @@ presi.df <- presi.df[-1123,]
 
 data.df <- merge(senado.df,presi.df, by = "Code", all = TRUE)
 
-# Remove unnecesary columns
+# Remove unnecessary columns
 data.df <- subset(data.df, select = c(Votos.Válidos..Nacional.,Alianza.Verde,Cambio.Radical, Centro.Democrático, Partido.Conservador, 
                              FARC, MIRA, Opción.Ciudadana, Partido.Liberal, Polo.Democrático.Alternativo, Partido.de.la.U,
                              Somos, Todos.Somos.Colombia, Coalición.Lista.de.la.Decencia..ASI.UP.MAIS., GSC.Colombia.Justa.Libres, 
@@ -127,7 +127,7 @@ xgb.pred$total <- rowSums(xgb.pred)
 
 ## Integrate data from "Consultas"
 
-consultas <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/consultas2022.csv")
+consultas <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/consultas2022.csv")
 consultas <- consultas[,-1]
 
 cons.df <- dcast(consultas, CODE_REGIS ~ Presi, value.var = 'VOTOS', fun=sum)
@@ -165,10 +165,8 @@ remove(cv.nfold, nround, xgb.Blanco.Pres.pred, xgb.Fajardo.pred, xgb.Fico.pred, 
 
 ##### POLL MODEL #####
 
-
 # Load dataset
-data.e <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/Encuestas.csv")
-data.e <- read.csv("Encuestas.csv")
+data.e <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/Encuestas.csv")
 
 # Clean data
 data.e$Fecha <- mdy(data.e$Fecha)
@@ -253,7 +251,7 @@ data.e.plot <- data.e.plot[data.e.plot$Fecha > start.date,]
 
 # Plot full plot
 
-group.colors <- c(Otros = "#27aeef", Fico = "#87bc45", Fajardo ="#ef9b20", Indecisos = "#808285", Petro = "#ea5545", Rodolfo = "#b33dc6", Ingrid = "#000000")
+group.colors <- c(Otros = "#ff0000", Fico = "#0000ff", Fajardo ="#14ce14", Indecisos = "#808285", Petro = "#800080", Rodolfo = "#c8c800", Ingrid = "#008000")
 
 data.e.plot <- data.e.plot[data.e.plot$Fecha > mdy("01/01/2022"),]
 data.e.model.plot.filter <- data.e.model.plot[data.e.model.plot$Fecha >= min(data.e.plot$Fecha),]
@@ -296,7 +294,7 @@ data.e.plot.und <- data.e.plot.und[data.e.plot.und$Fecha > start.date,]
 
 # Plot full plot
 
-group.colors <- c(Otros = "#27aeef", Fico = "#87bc45", Fajardo ="#ef9b20", Petro = "#ea5545", Rodolfo = "#b33dc6", Ingrid = "#000000")
+group.colors <- c(Otros = "#ff0000", Fico = "#0000ff", Fajardo ="#14ce14", Petro = "#800080", Rodolfo = "#c8c800", Ingrid = "#008000")
 
 data.e.plot.filter <- data.e.plot.und[data.e.plot.und$Fecha > mdy("01/01/2022"),]
 data.e.model.plot.filter <- data.e.model.plot[data.e.model.plot$Fecha >= min(data.e.plot$Fecha),]
@@ -335,9 +333,9 @@ test <- gtrendsR::gtrends(c("Petro Presidente", "Fico Presidente", "Fajardo Pres
 test <- test$interest_over_time
 test <- test[,c(1,2,3)]
 
- write.csv(test, "trends_intent_presidente.csv")
-# # 
-#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/trends_intent_presidente.csv")
+ write.csv(test, "data/trends_intent_presidente.csv")
+# # UPDATE MAY 27!!!!
+#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_intent_presidente.csv")
 #  test <- test[,-1]
 #  test$date <- ymd(test$date)
 
@@ -371,7 +369,7 @@ test.dalt.per$date <- test.dalt$date
 test.dalt.per <- reshape2::melt(test.dalt.per, id=c("date"))
 
 # Plot full plot
-group.colors <- c(Otros = "#27aeef", Fico = "#87bc45", Fajardo ="#ef9b20", Petro = "#ea5545", Rodolfo = "#b33dc6", Ingrid = "#000000")
+group.colors <- c(Otros = "#ff0000", Fico = "#0000ff", Fajardo ="#14ce14", Petro = "#800080", Rodolfo = "#c8c800", Ingrid = "#008000")
 
 data.plot <- ggplot(test.dalt.per, aes(x=date, y=value, color=variable)) +
   geom_point() +
@@ -401,9 +399,10 @@ test$hits <- as.numeric(test$hits)
 test$hits[is.na(test$hits)] <- 0
 test[is.na(test)] <- 0
 
-write.csv(test, "trends_category.csv")
-# 
-# test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/trends_category.csv")
+write.csv(test, "data/trends_category.csv")
+
+# # UPDATE MAY 27!!!!
+# test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_category.csv")
 # test <- test[,-1]
 # test$date <- ymd(test$date)
 
@@ -435,7 +434,7 @@ test.dalt.per <- reshape2::melt(test.dalt.per, id=c("date"))
 
 # Plot full plot
 
-group.colors <- c(Otros = "#27aeef", Fico = "#87bc45", Fajardo ="#ef9b20", Petro = "#ea5545", Rodolfo = "#b33dc6", Ingrid = "#000000")
+group.colors <- c(Otros = "#ff0000", Fico = "#0000ff", Fajardo ="#14ce14", Petro = "#800080", Rodolfo = "#c8c800", Ingrid = "#008000")
 
 data.plot <- ggplot(test.dalt.per, aes(x=date, y=value, color=variable)) +
   geom_point() +
@@ -467,9 +466,9 @@ test$hits <- as.numeric(test$hits)
 test$hits[is.na(test$hits)] <- 0
 test[is.na(test)] <- 0
 
-write.csv(test, "trends_intent_2022.csv")
-# # 
-#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/trends_intent_2022.csv")
+write.csv(test, "data/trends_intent_2022.csv")
+# # UPDATE MAY 27!!!!
+#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_intent_2022.csv")
 #  test <- test[,-1]
 #  test$date <- ymd(test$date)
 
@@ -503,7 +502,7 @@ test.dalt.per$date <- test.dalt$date
 test.dalt.per <- reshape2::melt(test.dalt.per, id=c("date"))
 
 # Plot full plot
-group.colors <- c(Otros = "#27aeef", Fico = "#87bc45", Fajardo ="#ef9b20", Petro = "#ea5545", Rodolfo = "#b33dc6", Ingrid = "#000000")
+group.colors <- c(Otros = "#ff0000", Fico = "#0000ff", Fajardo ="#14ce14", Petro = "#800080", Rodolfo = "#c8c800", Ingrid = "#008000")
 
 data.plot <- ggplot(test.dalt.per, aes(x=date, y=value, color=variable)) +
   geom_point() +
@@ -532,8 +531,8 @@ test$hits <- as.numeric(test$hits)
 test$hits[is.na(test$hits)] <- 0
 test[is.na(test)] <- 0
 
-write.csv(test, "trends_intent_propuestas.csv")
-# # 
+write.csv(test, "data/trends_intent_propuestas.csv")
+# # UPDATE MAY 27!!!!
 #  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/trends_intent_propuestas.csv")
 #  test <- test[,-1]
 #  test$date <- ymd(test$date)
@@ -568,7 +567,7 @@ test.dalt.per$date <- test.dalt$date
 test.dalt.per <- reshape2::melt(test.dalt.per, id=c("date"))
 
 # Plot full plot
-group.colors <- c(Otros = "#27aeef", Fico = "#87bc45", Fajardo ="#ef9b20", Petro = "#ea5545", Rodolfo = "#b33dc6", Ingrid = "#000000")
+group.colors <- c(Otros = "#ff0000", Fico = "#0000ff", Fajardo ="#14ce14", Petro = "#800080", Rodolfo = "#c8c800", Ingrid = "#008000")
 
 data.plot <- ggplot(test.dalt.per, aes(x=date, y=value, color=variable)) +
   geom_point() +
