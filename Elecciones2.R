@@ -650,7 +650,7 @@ trends.model.top$value <- trends.model.top$value/sum(trends.model.top$value)
 ensemble.model.top <- merge(reg.model.top, poll.model.top, by = "variable", all = TRUE )
 ensemble.model.top <- merge(ensemble.model.top, trends.model.top, by = "variable", all = TRUE )
 colnames(ensemble.model.top) <- c("Candidato","Regression","Polls","Trends")
-ensemble.model.top$Ensemble <- ensemble.model.top$Regression*0.35 + ensemble.model.top$Polls*0.5 + ensemble.model.top$Trends*0.15
+ensemble.model.top$Ensemble <- ensemble.model.top$Regression*0.25 + ensemble.model.top$Polls*0.60 + ensemble.model.top$Trends*0.15
 
 
 ## Model Mid Candidates
