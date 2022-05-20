@@ -217,7 +217,7 @@ i <- start.date
 data.e.model.out <- data.e.model[1,]
 data.e.model.out <- data.e.model.out[,c(3,8,9,10,11,12,13,14,15)]
 
-end.date <- mdy("05/11/2022")
+end.date <- mdy("05/19/2022")
 
 while (i <=  end.date) {
   data.loop <- data.e.model
@@ -671,7 +671,7 @@ ensemble.model$Ensemble <- ensemble.model$Ensemble*(1-blanco)
 ensemble.model <- rbind(ensemble.model, c("Blanco",blanco))
 ensemble.model$Ensemble <- as.numeric(ensemble.model$Ensemble)
 
-ensemble.model.otros <- rbind(c("Perez",ensemble.model$Ensemble[5]/3), c("Milton",ensemble.model$Ensemble[5]/3),c("Gomez",ensemble.model$Ensemble[5]/3))
+ensemble.model.otros <- rbind(c("Perez",ensemble.model$Ensemble[5]*2/10), c("Milton",ensemble.model$Ensemble[5]*4/10),c("Gomez",ensemble.model$Ensemble[5]*4/10))
 colnames(ensemble.model.otros) <- c("Candidato","Ensemble")
 ensemble.model <- rbind(ensemble.model[-5,], ensemble.model.otros)
 colnames(ensemble.model) <- c("candidato","int_voto")
