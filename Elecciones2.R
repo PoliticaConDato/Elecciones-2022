@@ -760,7 +760,7 @@ ensemble.model.ci$min <- as.numeric(ensemble.model.ci$min)*100
 ensemble.model.ci$max <- as.numeric(ensemble.model.ci$max)*100
 ensemble.model.ci$inter <- paste0(round(ensemble.model.ci$min,1),"-",round(ensemble.model.ci$max,1))
 
-ensemble.model.otros <- rbind(c("Ingrid",ensemble.model$Ensemble[4]*1/10),c("Perez",ensemble.model$Ensemble[4]*1/10), c("Milton",ensemble.model$Ensemble[4]*4/10),c("Gomez",ensemble.model$Ensemble[4]*4/10))
+ensemble.model.otros <- rbind(c("Ingrid",ensemble.model$Ensemble[4]*0.5/10),c("Perez",ensemble.model$Ensemble[4]*0.5/10), c("Milton",ensemble.model$Ensemble[4]*4.5/10),c("Gomez",ensemble.model$Ensemble[4]*4.5/10))
 colnames(ensemble.model.otros) <- c("Candidato","Ensemble")
 ensemble.model <- rbind(ensemble.model[-4,], ensemble.model.otros)
 colnames(ensemble.model) <- c("candidato","int_voto")
