@@ -61,14 +61,14 @@ data.e.model <- data.e
 data.e.model$rating.weight <- data.e.model$Rating / 5
 data.e.model$error.weight <- 1-data.e.model$Error*3
 
-election.date <- mdy("05/28/2022")
-start.date <- mdy("04/01/2021")
+election.date <- mdy("06/19/2022")
+start.date <- mdy("03/01/2022")
 
 i <- start.date
 data.e.model.out <- data.e.model[1,]
 data.e.model.out <- data.e.model.out[,c(3,8,9,10,11,13,14,15,16)]
 
-end.date <- mdy("05/19/2022")
+end.date <- mdy("06/03/2022")
 
 while (i <=  end.date) {
   data.loop <- data.e.model
@@ -227,15 +227,25 @@ test.d <- dcast(data = test, formula = date ~ keyword, fun.aggregate = sum, valu
 test.dalt <- test.d[-seq(1,6),]
 test.d1 <- zoo::rollmean(test.d$`Petro Presidente`, k = 7)
 test.d2 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 7)
+test.d1.30 <- zoo::rollmean(test.d$`Petro Presidente`, k = 30)
+test.d2.30 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 30)
 
-test.dalt$Petro <- test.d1*0.6
-test.dalt$Rodolfo <- test.d4*0.85
-test.dalt <- test.dalt[,-c(2,3,4,5)]
+test.dalt$Petro <- test.d1*1.0
+test.dalt$Rodolfo <- test.d2*0.85
+test.dalt <- test.dalt[,-c(2,3)]
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
-test.dalt.per <- test.dalt[,seq(2,5)]
+test.dalt.per <- test.dalt[,seq(2,3)]
 test.dalt.per <- test.dalt.per / test.dalt$total
 
-blanco <- (blanco.1 + blanco.2 + blanco.3 + as.numeric(reg.model[4]))/4
+test.dalt.30 <- test.d[-seq(1,29),]
+test.dalt.30$Petro <- test.d1.30*0.95
+test.dalt.30$Rodolfo <- test.d2.30*1.0
+test.dalt.30 <- test.dalt.30[,-c(2,3)]
+test.dalt.30$total <- test.dalt.30$Petro + test.dalt.30$Rodolfo
+test.dalt.per.30 <- test.dalt.30[,seq(2,3)]
+test.dalt.per.30 <- test.dalt.per.30 / test.dalt.30$total
+
+blanco <- (blanco.1 + blanco.2 + blanco.3)/4
 
 
 test.dalt.per <- test.dalt.per * (1-blanco-otros)
