@@ -10,14 +10,14 @@ library(kableExtra)
 
 ## Assumptions for "voto en blanco"
 
-blanco.1 <- 0.6 # Senate elections adjustment
+blanco.1 <- 0.04 # 1st Round elections adjustment
 blanco.2 <- 0.4 # Polling adjustment
-blanco.3 <- 0.017 # Historical average
+blanco.3 <- 0.04 # Historical average
 
 ##### POLL MODEL #####
 
 # Load dataset
-data.e <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/Encuestas.csv")
+data.e <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/Encuestas.csv")
 
 # Clean data
 data.e$Fecha <- mdy(data.e$Fecha)
@@ -25,16 +25,15 @@ data.e[is.na(data.e)] <- 0
 
 # Create variables
 data.e$Indecisos <- data.e$Blanco + data.e$NS.NR
-data.e$Otros <- data.e$Ingrid + data.e$Otros
 
 # Create dataset for full plot
-data.e.plot <- data.e[,-c(1,2,4,6,12,14,15,16)]
+data.e.plot <- data.e[,-c(1,2,4,6,10,11,12,13)]
 data.e.plot <- reshape2::melt(data.e.plot, id=c("Fecha","Rating","Muestra"))
 data.e.plot$value <- as.numeric(data.e.plot$value)
 data.e.plot <- data.e.plot[,-c(2,3)]
 
 # Create dataset for plot without undecided
-data.e.plot.und <- data.e[,-c(1,2,5,6,7,12,14,15,16)]
+data.e.plot.und <- data.e[,-c(1,2,5,6,10,11,12,13,14)]
 data.e.plot.und <- reshape2::melt(data.e.plot.und, id=c("Fecha","Encuestadora"))
 data.e.plot.und$value <- as.numeric(data.e.plot.und$value)
 data.e.plot.und <- data.e.plot.und[data.e.plot.und$variable != "Indecisos" & !is.na(data.e.plot.und$variable),]
@@ -212,31 +211,27 @@ remove(election.date, end.date, group.colors, i, start.date, total.weight, data.
 
 ##### TRENDS MODEL ####
 
-# # Import google trends data with intent (presidente)
-# test <- gtrendsR::gtrends(c("Petro Presidente", "Fico Presidente", "Fajardo Presidente", "Rodolfo Presidente"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
-# test <- test$interest_over_time
-# test <- test[,c(1,2,3)]
-# 
-#  write.csv(test, "data/trends_intent_presidente.csv")
+# Import google trends data with intent (presidente)
+test <- gtrendsR::gtrends(c("Petro Presidente", "Rodolfo Presidente"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
+test <- test$interest_over_time
+test <- test[,c(1,2,3)]
 
-  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_intent_presidente.csv")
-  test <- test[,-1]
-  test$date <- ymd(test$date)
+ write.csv(test, "data/trends_intent_presidente.csv")
+
+#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_intent_presidente.csv")
+#  test <- test[,-1]
+#  test$date <- ymd(test$date)
 
 # Create model based on moving averages
 test.d <- dcast(data = test, formula = date ~ keyword, fun.aggregate = sum, value.var = "hits")
 test.dalt <- test.d[-seq(1,6),]
 test.d1 <- zoo::rollmean(test.d$`Petro Presidente`, k = 7)
-test.d2 <- zoo::rollmean(test.d$`Fico Presidente`, k = 7)
-test.d3 <- zoo::rollmean(test.d$`Fajardo Presidente`, k = 7)
-test.d4 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 7)
+test.d2 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 7)
 
 test.dalt$Petro <- test.d1*0.6
-test.dalt$Fico <- test.d2
-test.dalt$Fajardo <- test.d3
 test.dalt$Rodolfo <- test.d4*0.85
 test.dalt <- test.dalt[,-c(2,3,4,5)]
-test.dalt$total <- test.dalt$Petro + test.dalt$Fico + test.dalt$Fajardo + test.dalt$Rodolfo
+test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
 test.dalt.per <- test.dalt[,seq(2,5)]
 test.dalt.per <- test.dalt.per / test.dalt$total
 
