@@ -10,6 +10,7 @@ library(kableExtra)
 library(png)
 library(cowplot)
 library(magick)
+library(tidyverse)
 
 ## Assumptions for "voto en blanco"
 
@@ -49,7 +50,7 @@ i <- start.date
 data.e.model.out <- data.e.model[1,]
 data.e.model.out <- data.e.model.out[,c(3,8,9,10,11,12)]
 
-end.date <- mdy("06/03/2022")
+end.date <- mdy("06/08/2022")
 
 while (i <=  end.date) {
   data.loop <- data.e.model
@@ -63,12 +64,6 @@ while (i <=  end.date) {
   blanco.cols <- data.loop[data.loop$Blanco > 0,]
   blanco.cols <- blanco.cols[,c(10,11)]
   blanco.cols$Blanco.Norm <-blanco.cols$Blanco / (1 - blanco.cols$NS.NR)
-    
-  #Normalized for CI
-  vote.cols.base <- data.loop[,c(8,9,10)] / (1-data.loop[,12])
-  vote.cols.min <- data.loop[,c(8,9,10)] / (1-data.loop[,12]) - data.loop$Error/ (1-data.loop[,12])
-  vote.cols.min[vote.cols.min<0] <- 0
-  vote.cols.max <- data.loop[,c(8,9,10)] / (1-data.loop[,12]) + data.loop$Error/ (1-data.loop[,12])
   
   vote.cols <- vote.cols*data.loop$weight
   vote.cols <- colSums(vote.cols)
@@ -84,30 +79,15 @@ while (i <=  end.date) {
   total.weight.blanco <- sum(data.loop$weight[data.loop$Blanco > 0])
   blanco.cols <- blanco.cols / total.weight.blanco
   
-  
-  
-  vote.cols.base.mean <- vote.cols.base %>% summarise_if(is.numeric, mean)
-
-  vote.cols.base.dif <- data.frame(do.call("rbind",(by(vote.cols.max, seq_len(nrow(vote.cols.max)), function(row) (row - vote.cols.base.mean)^2))))
-  vote.cols.base.dif <- vote.cols.base.dif*data.loop$weight
-  vote.cols.base.sd <- colSums(vote.cols.base.dif)
-  vote.cols.base.sd.max <- (vote.cols.base.sd / ((nrow(vote.cols.base.dif)-1)*total.weight))^(1/2)
-  
-  vote.cols.base.dif <- data.frame(do.call("rbind",(by(vote.cols.min, seq_len(nrow(vote.cols.min)), function(row) (row - vote.cols.base.mean)^2))))
-  vote.cols.base.dif <- vote.cols.base.dif*data.loop$weight
-  vote.cols.base.sd <- colSums(vote.cols.base.dif)
-  vote.cols.base.sd.min <- (vote.cols.base.sd / ((nrow(vote.cols.base.dif)-1)*total.weight))^(1/2)
-  
-  vote.cols.base.error.max <- vote.cols.base.sd.max*1.96
-  vote.cols.base.error.min <- vote.cols.base.sd.min*1.96
-  
   i <- i + 1
 }
+
 
 data.e.model.out <- data.e.model.out[-1,]
 data.e.model.out$Indecisos <- data.e.model.out$Blanco + data.e.model.out$NS.NR
 
 blanco.2 <- blanco.cols$Blanco.Norm
+polls <- data.loop
 
 # Create dataset to plot model output
 data.e.model.plot <- data.e.model.out[,-c(4,5,6)]
@@ -191,9 +171,9 @@ data.plot <- ggplot(data.e.plot.filter, aes(x=Fecha, y=value)) +
   guides(color = guide_legend(nrow = 1, byrow = TRUE)) + 
   geom_line(data = data.e.model.plot.filter, aes(x=Fecha, y=value), linetype = "dashed") +
   geom_ribbon(aes(ymin=-Inf, ymax=0), alpha=0.3, fill = "#c8c800") +
-  scale_fill_manual(values=c("#c8c800"), name="Rodolfo") + 
-  geom_ribbon(aes(ymin=0, ymax=Inf), alpha=0.3, fill = "#800080") +
-  scale_fill_manual(values=c("#800080"), name="Petro")
+  #scale_fill_manual(values=c("#c8c800"), name="Rodolfo") + 
+  geom_ribbon(aes(ymin=0, ymax=Inf), alpha=0.3, fill = "#800080") 
+  #scale_fill_manual(values=c("#800080"), name="Petro")
 
 my_plot_2 <- ggdraw() +
   draw_plot(data.plot) +
@@ -219,13 +199,6 @@ poll.model$Rodolfo <- poll.model$Rodolfo * (1 - poll.model$Blanco)
 poll.model <- data.frame(t(poll.model))
 poll.model$variable <- rownames(poll.model)
 colnames(poll.model) <- c("Polls","variable")
-
-poll.error <- data.frame(t(rbind(vote.cols.base.error.max, vote.cols.base.error.min)))
-poll.error$variable <- rownames(poll.error)
-
-poll.model.ci <- merge(poll.model, poll.error, by = "variable")
-colnames(poll.model.ci) <- c("variable","value","max","min")
-
 
 # Clean environment
 remove(election.date, end.date, group.colors, i, start.date, total.weight, data.e, date.e.model, data.e.model.out, data.e.model.plot, data.e.model.plot.total, data.e.plot, data.e.plot.und, data.e.plot.und.total, data.loop, data.plot, vote.cols, data.e.model.plot.filter, data.e.plot.filter, vote.cols.base, vote.cols.base.dif, vote.cols.base.mean, vote.cols.max, vote.cols.min, vote.cols.base.error.max, vote.cols.base.error.min, vote.cols.base.sd, vote.cols.base.sd.max, vote.cols.base.sd.min, blanco.cols, my_plot_1, my_plot_2, total.weight.blanco)
@@ -590,56 +563,6 @@ png("GTrends_Margen.png", width = 1200, height = 900, res = 120)
 my_plot_3
 dev.off()
 
-
-# Establish Google Trends confidence interval
-master.trend <- merge(trends.1, trends.2, by = c("date","variable"))
-master.trend <- merge(master.trend, trends.3, by = c("date","variable"))
-master.trend <- merge(master.trend, trends.4, by = c("date","variable"))
-colnames(master.trend) <- c("date","variable","model1","model2","model3","model4")
-master.trend$mean <- (master.trend$model1 + master.trend$model2 + master.trend$model3 + master.trend$model4)/4
-
-master.trend <-  group_by(master.trend, date)
-
-master.trend <- summarise(master.trend, 
-                              model1 = mean(model1, na.rm = TRUE),
-                          model2 = mean(model2, na.rm = TRUE),
-                          model3 = mean(model3, na.rm = TRUE),
-                          model4 = mean(model4, na.rm = TRUE),
-                          mean = mean(mean, na.rm = TRUE)
-)
-master.trend <- as.data.frame(master.trend)
-
-
-master.trend <- master.trend %>%
-  rowwise() %>%
-  mutate(
-    sd = sd(c(model1,model2,model3,model4))
-  )
-
-master.trend$var <- master.trend$sd^2
-
-
-master.trend.sum <- sum(master.trend$var)
-
-master.trend.sd <- (master.trend.sum/nrow(master.trend))^(1/2)
-
-trends.model.ci <- master.trend[master.trend$date == max(master.trend$date),]
-
-trends.model.ci$sd <- master.trend.sd
-trends.model.ci$min <- trends.model.ci$mean - 1.96*trends.model.ci$sd
-trends.model.ci$max <- trends.model.ci$mean + 1.96*trends.model.ci$sd
-trends.model.ci <- trends.model.ci[,c(6,9,10)]
-trends.model.ci$variable <- "Margin"
-trends.model.ci <- rbind(trends.model.ci,trends.model.ci,trends.model.ci,trends.model.ci)
-trends.model.ci <- as.data.frame(trends.model.ci)
-trends.model.ci[4,] <- c(blanco,0,0,"Blanco")
-trends.model.ci[3,c(1,2,3)] <- (1 - as.numeric(trends.model.ci[1,c(1,3,2)]) - blanco)/2
-trends.model.ci[2,c(1,2,3)] <- (1 + as.numeric(trends.model.ci[1,c(1,2,3)]) - blanco)/2
-trends.model.ci$variable[2] <- "Petro"
-trends.model.ci$variable[3] <- "Rodolfo"
-trends.model.ci <- trends.model.ci[-1,]
-trends.model.ci[,c(1,2,3)] <- as.numeric(unlist(trends.model.ci[,c(1,2,3)]))
-
 # Clear environment
 remove(group.colors, otros, test.d1, test.d2, test.d3, test.d4, test.d5,data.e.model, data.plot, test, test.d, test.dalt, test.dalt.per, trends.model.1, trends.model.2, trends.model.3, trends.model.4, trends.1, trends.2, trends.3, trends.4, master.trend, master.trend.sum, trends.e, test.dalt.30, test.dalt.per.30, test.dalt.per.filter, trends.e.filter, test.d1.30, test.d2.30)
 
@@ -653,35 +576,46 @@ ensemble.model$trends[ensemble.model$variable == "Petro"] <- (1+trends.margin-bl
 ensemble.model$trends[ensemble.model$variable == "Rodolfo"] <- (1-trends.margin-blanco)/2
 
 ensemble.model$ensemble <- ensemble.model$Polls*0.75 + ensemble.model$trends*0.25
-ensemble.model.ci <- ensemble.model
-ensemble.model.ci <- merge(ensemble.model.ci, poll.model.ci[,c(1,3,4)], by.x = "variable",by.y = "variable", all.x = TRUE)
-ensemble.model.ci$polls.max <- ensemble.model.ci$Polls + ensemble.model.ci$max
-ensemble.model.ci$polls.min <- ensemble.model.ci$Polls - ensemble.model.ci$min
-ensemble.model.ci <- ensemble.model.ci[,-c(5,6)]
-ensemble.model.ci <- merge(ensemble.model.ci, trends.model.ci[,c(2,3,4)], by.x = "variable",by.y = "variable", all.x = TRUE)
-ensemble.model.ci$trends.max <- ensemble.model.ci$trends + (ensemble.model.ci$max - ensemble.model.ci$ensemble)
-ensemble.model.ci$trends.min <- ensemble.model.ci$trends + (ensemble.model.ci$min - ensemble.model.ci$ensemble)
-
-ensemble.model.ci$max <- ensemble.model.ci$polls.max*0.75 + ensemble.model.ci$trends.max*0.25
-ensemble.model.ci$min <- ensemble.model.ci$polls.min*0.75 + ensemble.model.ci$trends.min*0.25
-ensemble.model.ci$polltrend <- ensemble.model.ci$Polls*0.75 + ensemble.model.ci$trends*0.25
-
-ensemble.model.ci$max.2 <- (ensemble.model.ci$max - ensemble.model.ci$polltrend) + ensemble.model.ci$ensemble
-ensemble.model.ci$min.2 <- (ensemble.model.ci$min - ensemble.model.ci$polltrend) + ensemble.model.ci$ensemble
-
-ensemble.model.ci$max <- apply(ensemble.model.ci[,c(2,3,12)],1, max)
-ensemble.model.ci$min <- apply(ensemble.model.ci[,c(2,3,13)],1, min)
-ensemble.model.ci <- ensemble.model.ci[,c(1,7,8)]
-
-ensemble.model.ci$min <- as.numeric(ensemble.model.ci$min)*100
-ensemble.model.ci$max <- as.numeric(ensemble.model.ci$max)*100
-ensemble.model.ci$inter <- paste0(round(ensemble.model.ci$min,1),"-",round(ensemble.model.ci$max,1))
-
 ensemble.model <- ensemble.model[,c(2,4)]
 
 colnames(ensemble.model) <- c("candidato","int_voto")
 ensemble.model$int_voto <- as.numeric(ensemble.model$int_voto)*100
-ensemble.model <- merge(ensemble.model, ensemble.model.ci[,c(1,4)], by.x = "candidato", by.y = "variable")
+
+## Create confidence interval 
+polls.prob <- polls[,c(3,7,8,9,18)]
+polls.prob$total <- polls.prob$Petro + polls.prob$Rodolfo
+polls.prob$Petro <- polls.prob$Petro / polls.prob$total
+polls.prob$Rodolfo <- polls.prob$Rodolfo / polls.prob$total
+
+polls.prob$margin <- polls.prob$Petro - polls.prob$Rodolfo
+
+polls.prob2 <- polls.prob[,c(2,3,5)]
+weight <- sum(polls.prob$weight)
+polls.prob$weight <- polls.prob$weight/weight
+
+polls.binom <- apply(polls.prob2, 1, function(x) rbinom(n = x[3]*100000, size = x[1], prob = x[2]))
+
+output.vec <- as.numeric(unlist(polls.binom[1])) / polls.prob2$Muestra[1]
+
+for(i in 2:nrow(polls.prob)) {
+  output.vec <- c(output.vec,as.numeric(unlist(polls.binom[i])) / polls.prob2$Muestra[i])
+  
+}
+
+quant.petro <- as.numeric(quantile(output.vec, c(0.05, 0.95)))*(1-blanco)
+quant.rodolfo <- 1 - quant.petro - blanco
+quant.blanco <- quant.rodolfo
+quant.blanco[1] <- blanco.1
+quant.blanco[2] <- blanco.2
+
+quant <- as.data.frame(rbind(sort(quant.petro), sort(quant.rodolfo), quant.blanco))
+quant <- quant*100
+quant$inter <- paste0(round(quant$V1,1),"-",round(quant$V2,1))
+
+ensemble.model <- cbind(ensemble.model, quant$inter)
+colnames(ensemble.model)[3] <- "inter"
+
+
 ensemble.model <- arrange(ensemble.model, desc(int_voto))
 
 ##### OUTPUT ####
@@ -702,3 +636,110 @@ ensemble.model %>%
         caption = "Pronostico: % votos por candidato (Basado en modelo PoliData)") %>% 
   kable_styling(full_width = F) %>% 
   footnote(number = c("Cocinero: PoliData","Twitter: @PoliticaConDato","Fecha pronóstico: 2022-06-17"))
+
+
+
+##### PROBABILISTIC MODEL #####
+
+output.mar <- 2*(output.vec) -1 
+
+# Histogram
+hist(output.mar, prob = TRUE,
+     main = "Histogram with density curve")
+lines(density(output.mar), col = 4, lwd = 2)
+
+output.mar <- data.frame(output.mar)
+output.dense <- density(output.mar$output.mar)
+output.dense <- cbind(output.dense$x, output.dense$y)
+output.dense <- as.data.frame(output.dense)
+output.dense$group <- ifelse(output.dense$V1 < 0, "Rodolfo", "Petro")
+
+group.colors <- c(Petro = "#800080", Rodolfo = "#c8c800")
+
+
+data.hist <- ggplot(output.dense, aes(x=V1, y=V2, fill=group)) +
+  geom_area() +
+  geom_line() +
+  scale_fill_manual(values=group.colors) +
+  
+  theme(legend.position="top", legend.title = element_blank(), legend.box = "horizontal", plot.title = element_text(hjust = 0.5)) + 
+  ggtitle("Distribución de margen 2nda vuelta") +
+  xlab("Margen") +
+  scale_x_continuous(labels = scales::percent)   +
+  geom_vline(aes(xintercept = mean(output.mar$output.mar)),col='red', linetype="dashed",size=1) 
+  #geom_text(aes(label=round(mean(output.mar$output.mar)*100,1),y=0,x=mean(output.mar$output.mar)),
+          #vjust=-1,col='red',size=4, fill = "grey")
+
+
+my_plot_4 <- ggdraw() +
+  draw_plot(data.hist) +
+  #draw_image("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/Petro.png", scale = 0.1, x = -0.315, y = 0.385 ) + 
+  #draw_image("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/Rodolfo.png", scale = 0.1, x = -0.315, y = -0.36 ) +
+  draw_image("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/PoliData.png", scale = 0.07, x = 0.475, y = -0.47 ) +
+  draw_text("@PoliticaConDato", size = 12, x = 0.85, y = 0.03)
+
+my_plot_4
+
+png("Probabilidad.png", width = 1200, height = 900, res = 120)
+my_plot_4
+dev.off()
+
+
+
+
+
+c50 <- length(which(output.vec<0.5))/length(output.vec)
+
+
+
+#### Probabilistic model trials #####
+
+polls.new <- polls.prob %>% 
+  mutate(margin = Petro - Rodolfo )
+
+
+results <- polls.new %>% 
+  summarize(avg = mean(margin), 
+            sd = sd(margin),
+            se = sd(margin) / sqrt(length(margin))) %>% 
+  mutate(start = avg - 1.96 * se, 
+         end = avg + 1.96 * se) 
+round(results * 100, 1)
+
+
+
+
+B <- 10000
+mu <- 0
+tau <- 0.02 #0.035
+
+petro_win <- replicate(B, {
+  results %>% mutate(sigma = sqrt(se^2 + .025^2), 
+                     B = sigma^2 / (sigma^2 + tau^2),
+                     posterior_mean = B * mu + (1 - B) * avg,
+                     posterior_se = sqrt(1 / (1/sigma^2 + 1/tau^2)),
+                     result = rnorm(length(posterior_mean), 
+                                    posterior_mean, posterior_se),
+                     petro = ifelse( result > 0, 1, 0)) %>%
+    summarise(petro =  sum(petro)) %>%
+    pull(petro)
+})
+
+petro_per <- replicate(B, {
+  results %>% mutate(sigma = sqrt(se^2 + .025^2), 
+                     B = sigma^2 / (sigma^2 + tau^2),
+                     posterior_mean = B * mu + (1 - B) * avg,
+                     posterior_se = sqrt(1 / (1/sigma^2 + 1/tau^2)),
+                     result = rnorm(length(posterior_mean), 
+                                    posterior_mean, posterior_se)) %>%
+    pull(result)
+})
+
+
+
+mean(petro_win)
+hist(petro_per)
+c50.2 <- length(which(petro_per>0))/length(petro_per)
+
+posterior_mean + c(-1.96, 1.96)*posterior_se
+1 - pnorm(0, posterior_mean, posterior_se)
