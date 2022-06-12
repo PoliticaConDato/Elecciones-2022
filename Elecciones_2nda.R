@@ -50,7 +50,7 @@ i <- start.date
 data.e.model.out <- data.e.model[1,]
 data.e.model.out <- data.e.model.out[,c(3,8,9,10,11,12)]
 
-end.date <- mdy("06/08/2022")
+end.date <- mdy("06/10/2022")
 
 while (i <=  end.date) {
   data.loop <- data.e.model
@@ -227,7 +227,7 @@ test.d2 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 7)
 test.d1.30 <- zoo::rollmean(test.d$`Petro Presidente`, k = 30)
 test.d2.30 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 30)
 
-test.dalt$Petro <- test.d1*0.9
+test.dalt$Petro <- test.d1*0.85
 test.dalt$Rodolfo <- test.d2*1.0
 test.dalt <- test.dalt[,-c(2,3)]
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
@@ -235,7 +235,7 @@ test.dalt.per <- test.dalt[,seq(2,3)]
 test.dalt.per <- test.dalt.per / test.dalt$total
 
 test.dalt.30 <- test.d[-seq(1,29),]
-test.dalt.30$Petro <- test.d1.30*0.9
+test.dalt.30$Petro <- test.d1.30*0.85
 test.dalt.30$Rodolfo <- test.d2.30*1.0
 test.dalt.30 <- test.dalt.30[,-c(2,3)]
 test.dalt.30$total <- test.dalt.30$Petro + test.dalt.30$Rodolfo
@@ -303,14 +303,14 @@ test.d2 <- zoo::rollmean(test.d$Rodolfo, k = 7)
 test.d1.30 <- zoo::rollmean(test.d$Petro, k = 30)
 test.d2.30 <- zoo::rollmean(test.d$Rodolfo, k = 30)
 
-test.dalt$Petro <- test.d1*0.9
+test.dalt$Petro <- test.d1*0.85
 test.dalt$Rodolfo <- test.d2*1.0
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
 test.dalt.per <- test.dalt[,seq(2,3)]
 test.dalt.per <- test.dalt.per / test.dalt$total
 
 test.dalt.30 <- test.d[-seq(1,29),]
-test.dalt.30$Petro <- test.d1.30*0.9
+test.dalt.30$Petro <- test.d1.30*0.85
 test.dalt.30$Rodolfo <- test.d2.30*1.0
 test.dalt.30$total <- test.dalt.30$Petro + test.dalt.30$Rodolfo
 test.dalt.per.30 <- test.dalt.30[,seq(2,3)]
@@ -377,7 +377,7 @@ test.d2 <- zoo::rollmean(test.d$`Rodolfo 2022`, k = 7)
 test.d1.30 <- zoo::rollmean(test.d$`Petro 2022`, k = 30)
 test.d2.30 <- zoo::rollmean(test.d$`Rodolfo 2022`, k = 30)
 
-test.dalt$Petro <- test.d1*0.9
+test.dalt$Petro <- test.d1*0.85
 test.dalt$Rodolfo <- test.d2*1.0
 test.dalt <- test.dalt[,-c(2,3)]
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
@@ -385,7 +385,7 @@ test.dalt.per <- test.dalt[,seq(2,3)]
 test.dalt.per <- test.dalt.per / test.dalt$total
 
 test.dalt.30 <- test.d[-seq(1,29),]
-test.dalt.30$Petro <- test.d1.30*0.9
+test.dalt.30$Petro <- test.d1.30*0.85
 test.dalt.30$Rodolfo <- test.d2.30*1.0
 test.dalt.30 <- test.dalt.30[,-c(2,3)]
 test.dalt.30$total <- test.dalt.30$Petro + test.dalt.30$Rodolfo
@@ -454,7 +454,7 @@ test.d2 <- zoo::rollmean(test.d$`Rodolfo Propuestas`, k = 7)
 test.d1.30 <- zoo::rollmean(test.d$`Petro Propuestas`, k = 30)
 test.d2.30 <- zoo::rollmean(test.d$`Rodolfo Propuestas`, k = 30)
 
-test.dalt$Petro <- test.d1*0.9
+test.dalt$Petro <- test.d1*0.85
 test.dalt$Rodolfo <- test.d2*1.0
 test.dalt <- test.dalt[,-c(2,3)]
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
@@ -462,7 +462,7 @@ test.dalt.per <- test.dalt[,seq(2,3)]
 test.dalt.per <- test.dalt.per / test.dalt$total
 
 test.dalt.30 <- test.d[-seq(1,29),]
-test.dalt.30$Petro <- test.d1.30*0.9
+test.dalt.30$Petro <- test.d1.30*0.85
 test.dalt.30$Rodolfo <- test.d2.30*1.0
 test.dalt.30 <- test.dalt.30[,-c(2,3)]
 test.dalt.30$total <- test.dalt.30$Petro + test.dalt.30$Rodolfo
@@ -516,7 +516,7 @@ colnames(trends.model.4) <- c("variable","model4")
 trends.model <- merge(trends.model.1, trends.model.2, by = "variable", all = TRUE)
 trends.model <- merge(trends.model, trends.model.3, by = "variable", all = TRUE)
 trends.model <- merge(trends.model, trends.model.4, by = "variable", all = TRUE)
-trends.model$value <- (trends.model$model1+ trends.model$model2+trends.model$model3+trends.model$model4)/4
+trends.model$value <- (trends.model$model1+trends.model$model3+trends.model$model4)/3
 
 # Output for Trends Model
 trends.model <- trends.model[,c(1,6)]
@@ -525,7 +525,7 @@ trends.model <- trends.model[,c(1,6)]
 
 trends.e <- list(trends.1, trends.2, trends.3, trends.4)
 trends.e <- Reduce(function(x, y) merge(x, y, all=TRUE, by = c("date","variable")), trends.e)
-trends.e$value <- rowMeans(trends.e[,3:6])
+trends.e$value <- rowMeans(trends.e[,c(3,5,6)])
 trends.e <- trends.e[,-c(3,4,5,6)]
 trends.e <- dcast(data = trends.e, formula = date ~ variable, fun.aggregate = mean, value.var = "value")
 trends.e$Margen <- (trends.e$Margen.7 + trends.e$Margen.30)/2
@@ -593,7 +593,7 @@ polls.prob2 <- polls.prob[,c(2,3,5)]
 weight <- sum(polls.prob$weight)
 polls.prob$weight <- polls.prob$weight/weight
 
-polls.binom <- apply(polls.prob2, 1, function(x) rbinom(n = x[3]*100000, size = x[1], prob = x[2]))
+polls.binom <- apply(polls.prob2, 1, function(x) rbinom(n = x[3]*1000000, size = x[1], prob = x[2]))
 
 output.vec <- as.numeric(unlist(polls.binom[1])) / polls.prob2$Muestra[1]
 
@@ -646,6 +646,8 @@ output.mar <- 2*(output.vec) -1
 # Histogram
 hist(output.mar, prob = TRUE,
      main = "Histogram with density curve")
+
+
 lines(density(output.mar), col = 4, lwd = 2)
 
 output.mar <- data.frame(output.mar)
@@ -653,6 +655,8 @@ output.dense <- density(output.mar$output.mar)
 output.dense <- cbind(output.dense$x, output.dense$y)
 output.dense <- as.data.frame(output.dense)
 output.dense$group <- ifelse(output.dense$V1 < 0, "Rodolfo", "Petro")
+
+ensemble.margin <- ensemble.model$int_voto[1]/(1-blanco) - ensemble.model$int_voto[2]/(1-blanco) 
 
 group.colors <- c(Petro = "#800080", Rodolfo = "#c8c800")
 
@@ -662,13 +666,17 @@ data.hist <- ggplot(output.dense, aes(x=V1, y=V2, fill=group)) +
   geom_line() +
   scale_fill_manual(values=group.colors) +
   
-  theme(legend.position="top", legend.title = element_blank(), legend.box = "horizontal", plot.title = element_text(hjust = 0.5)) + 
+  theme(legend.position="top", legend.title = element_blank(), legend.box = "horizontal", plot.title = element_text(hjust = 0.5), 
+        axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()) + 
   ggtitle("Distribución de margen 2nda vuelta") +
-  xlab("Margen") +
+  xlab("Margen (Petro % - Rodolfo%)") +
   scale_x_continuous(labels = scales::percent)   +
-  geom_vline(aes(xintercept = mean(output.mar$output.mar)),col='red', linetype="dashed",size=1) 
-  #geom_text(aes(label=round(mean(output.mar$output.mar)*100,1),y=0,x=mean(output.mar$output.mar)),
-          #vjust=-1,col='red',size=4, fill = "grey")
+  geom_vline(aes(xintercept = mean(output.mar$output.mar)),col='red', linetype="dashed",size=1) +
+  geom_text(aes(mean(output.mar$output.mar), 2, label=paste0(round(mean(output.mar$output.mar)*100,1),"%"), color = 'Modelo Encuestas', hjust = -0.5, vjust = -20)) + 
+geom_vline(aes(xintercept = ensemble.margin/100),col='blue', linetype="dashed",size=1) +
+  geom_text(aes(ensemble.margin, 2, label=paste0(round(ensemble.margin,1),"%"), color = 'Modelo Ensamble', hjust = 6, vjust = -20))
+
+data.hist
 
 
 my_plot_4 <- ggdraw() +
@@ -740,6 +748,3 @@ petro_per <- replicate(B, {
 mean(petro_win)
 hist(petro_per)
 c50.2 <- length(which(petro_per>0))/length(petro_per)
-
-posterior_mean + c(-1.96, 1.96)*posterior_se
-1 - pnorm(0, posterior_mean, posterior_se)
