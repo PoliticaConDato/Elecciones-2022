@@ -50,7 +50,7 @@ i <- start.date
 data.e.model.out <- data.e.model[1,]
 data.e.model.out <- data.e.model.out[,c(3,8,9,10,11,12)]
 
-end.date <- mdy("06/10/2022")
+end.date <- mdy("06/15/2022")
 
 while (i <=  end.date) {
   data.loop <- data.e.model
@@ -672,9 +672,9 @@ data.hist <- ggplot(output.dense, aes(x=V1, y=V2, fill=group)) +
   xlab("Margen (Petro % - Rodolfo%)") +
   scale_x_continuous(labels = scales::percent)   +
   geom_vline(aes(xintercept = mean(output.mar$output.mar)),col='red', linetype="dashed",size=1) +
-  geom_text(aes(mean(output.mar$output.mar), 2, label=paste0(round(mean(output.mar$output.mar)*100,1),"%"), color = 'Modelo Encuestas', hjust = -0.5, vjust = -20)) + 
+  geom_text(aes(mean(output.mar$output.mar), 2, label=paste0(round(mean(output.mar$output.mar)*100,1),"%"), color = 'Modelo Encuestas', hjust = 1.4, vjust = -20)) + 
 geom_vline(aes(xintercept = ensemble.margin/100),col='blue', linetype="dashed",size=1) +
-  geom_text(aes(ensemble.margin, 2, label=paste0(round(ensemble.margin,1),"%"), color = 'Modelo Ensamble', hjust = 6, vjust = -20))
+  geom_text(aes(ensemble.margin/100, 2, label=paste0(round(ensemble.margin,1),"%"), color = 'Modelo Ensamble', hjust = -1, vjust = -20))
 
 data.hist
 
