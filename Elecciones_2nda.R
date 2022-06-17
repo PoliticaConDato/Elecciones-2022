@@ -207,17 +207,17 @@ remove(election.date, end.date, group.colors, i, start.date, total.weight, data.
 ##### TRENDS MODEL ####
 
 # Import google trends data with intent (presidente)
-test <- gtrendsR::gtrends(c("Petro Presidente", "Rodolfo Presidente"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
-test <- test$interest_over_time
-test <- test[,c(1,2,3)]
-test$hits <- as.numeric(test$hits)
-test$hits[is.na(test$hits)] <- 0
-test[is.na(test)] <- 0
- write.csv(test, "data_2nda/trends_intent_presidente.csv")
+# test <- gtrendsR::gtrends(c("Petro Presidente", "Rodolfo Presidente"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
+# test <- test$interest_over_time
+# test <- test[,c(1,2,3)]
+# test$hits <- as.numeric(test$hits)
+# test$hits[is.na(test$hits)] <- 0
+# test[is.na(test)] <- 0
+#  write.csv(test, "data_2nda/trends_intent_presidente.csv")
 
-#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_intent_presidente.csv")
-#  test <- test[,-1]
-#  test$date <- ymd(test$date)
+  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/trends_intent_presidente.csv")
+  test <- test[,-1]
+  test$date <- ymd(test$date)
 
 # Create model based on moving averages
 test.d <- dcast(data = test, formula = date ~ keyword, fun.aggregate = sum, value.var = "hits")
@@ -282,17 +282,17 @@ trends.model.1 <- test.dalt.per[test.dalt.per$date == max(test.dalt.per$date),]
 trends.model.1 <- trends.model.1[,-1]
 
 # Import google trends data based on topics 
-test <- gtrendsR::gtrends(c("/g/11hcszl05g", "/m/03c3tmt"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
-test <- test$interest_over_time
-test <- test[,c(1,2,3)]
-test$hits <- as.numeric(test$hits)
-test$hits[is.na(test$hits)] <- 0
-test[is.na(test)] <- 0
-write.csv(test, "data_2nda/trends_category.csv")
+# test <- gtrendsR::gtrends(c("/g/11hcszl05g", "/m/03c3tmt"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
+# test <- test$interest_over_time
+# test <- test[,c(1,2,3)]
+# test$hits <- as.numeric(test$hits)
+# test$hits[is.na(test$hits)] <- 0
+# test[is.na(test)] <- 0
+# write.csv(test, "data_2nda/trends_category.csv")
 
-#test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/trends_category.csv")
-#  test <- test[,-1]
-#  test$date <- ymd(test$date)
+test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/trends_category.csv")
+  test <- test[,-1]
+  test$date <- ymd(test$date)
 
 # Create model based on moving averages
 test.d <- dcast(data = test, formula = date ~ keyword, fun.aggregate = sum, value.var = "hits")
@@ -357,17 +357,17 @@ trends.model.2 <- trends.model.2[,-1]
 
 
 # Import google trends data with intent (2022)
-test <- gtrendsR::gtrends(c("Petro 2022", "Rodolfo 2022"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
-test <- test$interest_over_time
-test <- test[,c(1,2,3)]
-test$hits <- as.numeric(test$hits)
-test$hits[is.na(test$hits)] <- 0
-test[is.na(test)] <- 0
-write.csv(test, "data_2nda/trends_intent_2022.csv")
+# test <- gtrendsR::gtrends(c("Petro 2022", "Rodolfo 2022"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
+# test <- test$interest_over_time
+# test <- test[,c(1,2,3)]
+# test$hits <- as.numeric(test$hits)
+# test$hits[is.na(test$hits)] <- 0
+# test[is.na(test)] <- 0
+# write.csv(test, "data_2nda/trends_intent_2022.csv")
 
-#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_intent_2022.csv")
-#  test <- test[,-1]
-#  test$date <- ymd(test$date)
+  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/trends_intent_2022.csv")
+  test <- test[,-1]
+  test$date <- ymd(test$date)
 
 # Create model based on moving averages
 test.d <- dcast(data = test, formula = date ~ keyword, fun.aggregate = sum, value.var = "hits")
@@ -434,17 +434,17 @@ trends.model.3 <- trends.model.3[,-1]
 
 
 # Import google trends data with intent (propuestas)
-test <- gtrendsR::gtrends(c("Petro Propuestas", "Rodolfo Propuestas"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
-test <- test$interest_over_time
-test <- test[,c(1,2,3)]
-test$hits <- as.numeric(test$hits)
-test$hits[is.na(test$hits)] <- 0
-test[is.na(test)] <- 0
-write.csv(test, "data_2nda/trends_intent_propuestas.csv")
+# test <- gtrendsR::gtrends(c("Petro Propuestas", "Rodolfo Propuestas"), geo = "CO", time = "today 3-m", onlyInterest = TRUE)
+# test <- test$interest_over_time
+# test <- test[,c(1,2,3)]
+# test$hits <- as.numeric(test$hits)
+# test$hits[is.na(test$hits)] <- 0
+# test[is.na(test)] <- 0
+# write.csv(test, "data_2nda/trends_intent_propuestas.csv")
 
-#  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data/trends_intent_propuestas.csv")
-#  test <- test[,-1]
-#  test$date <- ymd(test$date)
+  test <- read.csv("https://raw.githubusercontent.com/PoliticaConDato/Elecciones-2022/main/data_2nda/trends_intent_propuestas.csv")
+  test <- test[,-1]
+  test$date <- ymd(test$date)
 
 # Create model based on moving averages
 test.d <- dcast(data = test, formula = date ~ keyword, fun.aggregate = sum, value.var = "hits")
@@ -637,35 +637,35 @@ ensemble.model %>%
   kable_styling(full_width = F) %>% 
   footnote(number = c("Cocinero: PoliData","Twitter: @PoliticaConDato","Fecha pronóstico: 2022-06-17"))
 
-ensemble.model$Polls <- poll.model$Polls*100
-
-output.model <- mutate(ensemble.model, nombres = case_when(candidato=="Petro" ~ "Gustavo Petro",
-                                                           candidato=="Rodolfo" ~ "Rodolfo Hernandez",
-                                                           candidato=="Blanco" ~ "Blanco") %>%
-                         factor())
-
-
-output.model <- output.model %>%
-  dplyr::group_by(nombres) %>% 
-  dplyr::summarise(modelo_ensamble=mean(int_voto,na.rm=TRUE)) %>%
-  dplyr::arrange(desc(modelo_ensamble)) 
-
-output.model2 <- mutate(ensemble.model, nombres = case_when(candidato=="Petro" ~ "Gustavo Petro",
-                                                            candidato=="Rodolfo" ~ "Rodolfo Hernandez",
-                                                            candidato=="Blanco" ~ "Blanco") %>%
-                          factor()) %>%
-  dplyr::group_by(nombres) %>% 
-  dplyr::summarise(modelo_encuestas=mean(Polls,na.rm=TRUE))  %>%
-  dplyr::arrange(desc(modelo_encuestas)) %>%
-  dplyr::mutate(intervalo = ensemble.model$inter)
-
-output.model <- cbind(output.model, output.model2[,c(2,3)])
-
-kable(output.model, "html", 
-      digits=1,
-      caption = "Pronostico: % votos por candidato (Basado en modelo PoliData)") %>% 
-  kable_styling(full_width = F) %>% 
-  footnote(number = c("Cocinero: PoliData","Twitter: @PoliticaConDato","Fecha pronóstico: 2022-06-17"))
+# ensemble.model$Polls <- poll.model$Polls*100
+# 
+# output.model <- mutate(ensemble.model, nombres = case_when(candidato=="Petro" ~ "Gustavo Petro",
+#                                                            candidato=="Rodolfo" ~ "Rodolfo Hernandez",
+#                                                            candidato=="Blanco" ~ "Blanco") %>%
+#                          factor())
+# 
+# 
+# output.model <- output.model %>%
+#   dplyr::group_by(nombres) %>% 
+#   dplyr::summarise(modelo_ensamble=mean(int_voto,na.rm=TRUE)) %>%
+#   dplyr::arrange(desc(modelo_ensamble)) 
+# 
+# output.model2 <- mutate(ensemble.model, nombres = case_when(candidato=="Petro" ~ "Gustavo Petro",
+#                                                             candidato=="Rodolfo" ~ "Rodolfo Hernandez",
+#                                                             candidato=="Blanco" ~ "Blanco") %>%
+#                           factor()) %>%
+#   dplyr::group_by(nombres) %>% 
+#   dplyr::summarise(modelo_encuestas=mean(Polls,na.rm=TRUE))  %>%
+#   dplyr::arrange(desc(modelo_encuestas)) %>%
+#   dplyr::mutate(intervalo = ensemble.model$inter)
+# 
+# output.model <- cbind(output.model, output.model2[,c(2,3)])
+# 
+# kable(output.model, "html", 
+#       digits=1,
+#       caption = "Pronostico: % votos por candidato (Basado en modelo PoliData)") %>% 
+#   kable_styling(full_width = F) %>% 
+#   footnote(number = c("Cocinero: PoliData","Twitter: @PoliticaConDato","Fecha pronóstico: 2022-06-17"))
   
 ##### PROBABILISTIC MODEL #####
 
