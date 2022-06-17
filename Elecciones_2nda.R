@@ -50,7 +50,7 @@ i <- start.date
 data.e.model.out <- data.e.model[1,]
 data.e.model.out <- data.e.model.out[,c(3,8,9,10,11,12)]
 
-end.date <- mdy("06/15/2022")
+end.date <- mdy("06/14/2022")
 
 while (i <=  end.date) {
   data.loop <- data.e.model
@@ -227,7 +227,7 @@ test.d2 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 7)
 test.d1.30 <- zoo::rollmean(test.d$`Petro Presidente`, k = 30)
 test.d2.30 <- zoo::rollmean(test.d$`Rodolfo Presidente`, k = 30)
 
-test.dalt$Petro <- test.d1*0.85
+test.dalt$Petro <- test.d1*0.8
 test.dalt$Rodolfo <- test.d2*1.0
 test.dalt <- test.dalt[,-c(2,3)]
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
@@ -303,7 +303,7 @@ test.d2 <- zoo::rollmean(test.d$Rodolfo, k = 7)
 test.d1.30 <- zoo::rollmean(test.d$Petro, k = 30)
 test.d2.30 <- zoo::rollmean(test.d$Rodolfo, k = 30)
 
-test.dalt$Petro <- test.d1*0.85
+test.dalt$Petro <- test.d1*0.8
 test.dalt$Rodolfo <- test.d2*1.0
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
 test.dalt.per <- test.dalt[,seq(2,3)]
@@ -454,7 +454,7 @@ test.d2 <- zoo::rollmean(test.d$`Rodolfo Propuestas`, k = 7)
 test.d1.30 <- zoo::rollmean(test.d$`Petro Propuestas`, k = 30)
 test.d2.30 <- zoo::rollmean(test.d$`Rodolfo Propuestas`, k = 30)
 
-test.dalt$Petro <- test.d1*0.85
+test.dalt$Petro <- test.d1*0.8
 test.dalt$Rodolfo <- test.d2*1.0
 test.dalt <- test.dalt[,-c(2,3)]
 test.dalt$total <- test.dalt$Petro + test.dalt$Rodolfo
@@ -575,7 +575,7 @@ ensemble.model$trends[ensemble.model$variable == "Blanco"] <- blanco
 ensemble.model$trends[ensemble.model$variable == "Petro"] <- (1+trends.margin-blanco)/2
 ensemble.model$trends[ensemble.model$variable == "Rodolfo"] <- (1-trends.margin-blanco)/2
 
-ensemble.model$ensemble <- ensemble.model$Polls*0.75 + ensemble.model$trends*0.25
+ensemble.model$ensemble <- ensemble.model$Polls*0.8 + ensemble.model$trends*0.2
 ensemble.model <- ensemble.model[,c(2,4)]
 
 colnames(ensemble.model) <- c("candidato","int_voto")
@@ -637,8 +637,36 @@ ensemble.model %>%
   kable_styling(full_width = F) %>% 
   footnote(number = c("Cocinero: PoliData","Twitter: @PoliticaConDato","Fecha pronóstico: 2022-06-17"))
 
+ensemble.model$Polls <- poll.model$Polls*100
+
+output.model <- mutate(ensemble.model, nombres = case_when(candidato=="Petro" ~ "Gustavo Petro",
+                                                           candidato=="Rodolfo" ~ "Rodolfo Hernandez",
+                                                           candidato=="Blanco" ~ "Blanco") %>%
+                         factor())
 
 
+output.model <- output.model %>%
+  dplyr::group_by(nombres) %>% 
+  dplyr::summarise(modelo_ensamble=mean(int_voto,na.rm=TRUE)) %>%
+  dplyr::arrange(desc(modelo_ensamble)) 
+
+output.model2 <- mutate(ensemble.model, nombres = case_when(candidato=="Petro" ~ "Gustavo Petro",
+                                                            candidato=="Rodolfo" ~ "Rodolfo Hernandez",
+                                                            candidato=="Blanco" ~ "Blanco") %>%
+                          factor()) %>%
+  dplyr::group_by(nombres) %>% 
+  dplyr::summarise(modelo_encuestas=mean(Polls,na.rm=TRUE))  %>%
+  dplyr::arrange(desc(modelo_encuestas)) %>%
+  dplyr::mutate(intervalo = ensemble.model$inter)
+
+output.model <- cbind(output.model, output.model2[,c(2,3)])
+
+kable(output.model, "html", 
+      digits=1,
+      caption = "Pronostico: % votos por candidato (Basado en modelo PoliData)") %>% 
+  kable_styling(full_width = F) %>% 
+  footnote(number = c("Cocinero: PoliData","Twitter: @PoliticaConDato","Fecha pronóstico: 2022-06-17"))
+  
 ##### PROBABILISTIC MODEL #####
 
 output.mar <- 2*(output.vec) -1 
